@@ -73,6 +73,17 @@ int generate_expressions_and_variables(FILE *fp, string_list *final_expressions,
                 printf("%d. helyen szintaktikai hiba %c előtt.\nKilépés.\n", i, c);
                 return 1;
             }
+            else if ((last == '&' || last == '|' || last == '!') && (c == '&' || c == '|')) {
+                printf("%d. helyen szintaktikai hiba: %c\nKilépés.\n", i, c);
+                return 1;
+            }
+            else if ((c == '&' || c == '|' || c == '!') && (last == '&' || last == '|')) {
+                printf("%d. helyen szintaktikai hiba: %c.\nKilépés.\n", i, c);
+            }
+            else if ((last != '&' && last != '|' && last != '!' && last != '(' && last != ')' && last != '\0') && (c != '&' && c != '|' && c && '!' && c != '(' && c != ')')) {
+                printf("%d. helyen szintaktikai hiba: %c\nKilépés.\n", i, c);
+                return 1;
+            }
             err = append_character(first_node -> data, c, allocated);
             if (err)
                 return 1;
@@ -90,11 +101,11 @@ int generate_expressions_and_variables(FILE *fp, string_list *final_expressions,
         i++;
     }
     if (last == '&' || last == '|' || last == '|') {
-        printf("%d. helyen szintaktikai hiba %c után.\nKilépés.\n", i, c);
+        printf("%d. helyen szintaktikai hiba %c után.\nkilépés.\n", i, c);
         return 1;
     }
     if ( open_parentheses != 0) {
-        printf("Szintaktikai hiba a zárójelezésben. Kilépés.\n");
+        printf("szintaktikai hiba a zárójelezésben. kilépés.\n");
         return 1;
     }
     pull_string_from_front(expression_parts, allocated);
@@ -229,7 +240,7 @@ int evaluate(FILE *fp, string *variables, string_list *expressions, pointer_list
     table truth_table = get_table(max_index + 1, variable_count + 1, 1, 1, fp);
     for (int i = 0; i < variable_count; i++)
         print_table(&truth_table, vars[i]);
-    print_table(&truth_table, 'F');
+    print_table(&truth_table, 'f');
     for (int index = 0; index < max_index; index++) {
         int *values = generate_variable_values(index, variable_count, allocated);
         int result = eval_expression(splitted_parts, expressions -> length, vars, values, allocated);
@@ -296,13 +307,13 @@ int program(pointer_list *allocated) {
     if (filename == NULL)
         return 1;
     if (!validate_filename(filename)) {
-        printf("\"%s\" nem \".txt\" kiterjesztésű.\nKilépés.\n", filename);
+        printf("\"%s\" nem \".txt\" kiterjesztésű.\nkilépés.\n", filename);
         return 1;
     }
 
     FILE *input = fopen(filename, "r");
     if (input == NULL) {
-        printf("A fájl nem található: %s\n", filename);
+        printf("a fájl nem található: %s\n", filename);
         return 1;
     }
     printf("%s betöltése... \n", filename);
