@@ -286,9 +286,11 @@ int validate_filename(char *fn) {
         return 0;
     char *extension = ".txt";
     int ext_length = strlen(extension);
-    for (int i = length - ext_length; i < ext_length + 1; i++)
-        if (fn[i] != extension[i - (length - ext_length)])
+    for (int i = 0; i < ext_length + 1; i++) {
+        printf("fn[i]: %c, extension[i - (length - ext_length): %c\n", fn[i], extension[i - (length - ext_length)]);
+        if (fn[length - ext_length + i] != extension[i])
             return 0;
+    }
     return 1;
 }
 
@@ -307,13 +309,13 @@ int program(pointer_list *allocated) {
     if (filename == NULL)
         return 1;
     if (!validate_filename(filename)) {
-        printf("\"%s\" nem \".txt\" kiterjesztésű.\nkilépés.\n", filename);
+        printf("\"%s\" nem \".txt\" kiterjesztésű.\nKilépés.\n", filename);
         return 1;
     }
 
     FILE *input = fopen(filename, "r");
     if (input == NULL) {
-        printf("a fájl nem található: %s\n", filename);
+        printf("a fájl nem található: %s\nKilépés.\n", filename);
         return 1;
     }
     printf("%s betöltése... \n", filename);
@@ -329,7 +331,7 @@ int program(pointer_list *allocated) {
         return 1;
     FILE *fp = fopen(output, "w");
     if (fp == NULL) {
-        printf("A fajlt nem lehet megnyitni: %s\n", output);
+        printf("A fajlt nem lehet megnyitni: %s\nKilépés.\n", output);
         return 1;
     }
     printf("Kiértékelés... \n");
